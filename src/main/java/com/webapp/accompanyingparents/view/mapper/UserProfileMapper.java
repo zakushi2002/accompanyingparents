@@ -28,10 +28,10 @@ public interface UserProfileMapper {
     @BeanMapping(ignoreByDefault = true)
     UserProfileDto fromEntityToUserProfileDto(UserProfile userProfile);
 
-    @Mapping(source = "account.avatarPath", target = "userAvatar")
-    @Mapping(source = "account.fullName", target = "userFullName")
-    @Mapping(source = "dob", target = "userDayOfBirth")
-    @Mapping(source = "phone", target = "userPhone")
+    @Mapping(source = "userAvatar", target = "account.avatarPath")
+    @Mapping(source = "userFullName", target = "account.fullName")
+    @Mapping(source = "userDayOfBirth", target = "dob")
+    @Mapping(source = "userPhone", target = "phone")
     @BeanMapping(ignoreByDefault = true)
     void mappingForUpdateUserProfile(UpdateUserProfileForm updateUserProfileForm, @MappingTarget UserProfile userProfile);
 }
