@@ -3,9 +3,11 @@ package com.webapp.accompanyingparents.view.mapper;
 import com.webapp.accompanyingparents.model.UserProfile;
 import com.webapp.accompanyingparents.view.dto.user.UserProfileDto;
 import com.webapp.accompanyingparents.view.form.user.CreateUserForm;
+import com.webapp.accompanyingparents.view.form.user.UpdateUserProfileForm;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface UserProfileMapper {
@@ -25,4 +27,11 @@ public interface UserProfileMapper {
     @Mapping(source = "phone", target = "userPhone")
     @BeanMapping(ignoreByDefault = true)
     UserProfileDto fromEntityToUserProfileDto(UserProfile userProfile);
+
+    @Mapping(source = "account.avatarPath", target = "userAvatar")
+    @Mapping(source = "account.fullName", target = "userFullName")
+    @Mapping(source = "dob", target = "userDayOfBirth")
+    @Mapping(source = "phone", target = "userPhone")
+    @BeanMapping(ignoreByDefault = true)
+    void mappingForUpdateUserProfile(UpdateUserProfileForm updateUserProfileForm, @MappingTarget UserProfile userProfile);
 }

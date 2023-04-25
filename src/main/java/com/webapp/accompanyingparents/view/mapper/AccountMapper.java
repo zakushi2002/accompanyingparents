@@ -3,6 +3,7 @@ package com.webapp.accompanyingparents.view.mapper;
 import com.webapp.accompanyingparents.model.Account;
 import com.webapp.accompanyingparents.view.dto.account.AccountAutoCompleteDto;
 import com.webapp.accompanyingparents.view.dto.account.AccountDto;
+import com.webapp.accompanyingparents.view.form.user.ChangePasswordForm;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -28,4 +29,7 @@ public interface AccountMapper {
 
     @IterableMapping(elementTargetType = AccountAutoCompleteDto.class)
     List<AccountAutoCompleteDto> convertAccountToAutoCompleteDto(List<Account> list);
+    @Mapping(source = "newPassword", target = "password")
+    @BeanMapping(ignoreByDefault = true)
+    void mappingForChangePassword(ChangePasswordForm changePasswordForm, @MappingTarget Account account);
 }

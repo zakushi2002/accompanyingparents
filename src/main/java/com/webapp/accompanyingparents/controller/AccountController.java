@@ -12,6 +12,8 @@ import com.webapp.accompanyingparents.view.dto.ApiResponse;
 import com.webapp.accompanyingparents.view.dto.ErrorCode;
 import com.webapp.accompanyingparents.view.form.account.CreateAccountAdminForm;
 import com.webapp.accompanyingparents.view.form.account.UpdateAccountAdminForm;
+import com.webapp.accompanyingparents.view.form.user.ChangePasswordForm;
+import com.webapp.accompanyingparents.view.mapper.AccountMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -35,6 +37,8 @@ public class AccountController extends ABasicController {
     RoleRepository roleRepository;
     @Autowired
     UserProfileRepository userProfileRepository;
+    @Autowired
+    AccountMapper accountMapper;
 
     @PreAuthorize("hasPermission('ADMIN', 'C')")
     @PostMapping(value = "/create-admin", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -159,4 +163,22 @@ public class AccountController extends ABasicController {
         }
         return "redirect:/login?logout";
     }*/
+
+    @PreAuthorize("hasPermission('PASSWORD', 'U')")
+    @PutMapping(value = "/change-password")
+    public ApiMessageDto<Long> changePassword(@Valid @RequestBody ChangePasswordForm changePasswordForm, BindingResult bindingResult) {
+        ApiMessageDto<Long> apiMessageDto = new ApiMessageDto<>();
+        String email = getCurrentUser();
+        Account account = accountRepository.findAccountByEmail(email);
+        if (account == null) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.USER_ERROR_NOT_FOUND);
+            return apiMessageDto;
+        }
+        accountMapper.mappingForChangePassword(changePasswordForm, account);
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
+        accountRepository.save(account);
+        apiMessageDto.setMessage("Change password success");
+        return apiMessageDto;
+    }
 }

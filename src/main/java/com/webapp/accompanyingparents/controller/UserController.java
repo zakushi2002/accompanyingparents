@@ -1,6 +1,8 @@
 package com.webapp.accompanyingparents.controller;
 
 import com.webapp.accompanyingparents.config.constant.APConstant;
+import com.webapp.accompanyingparents.view.dto.ApiResponse;
+import com.webapp.accompanyingparents.view.form.user.UpdateUserProfileForm;
 import com.webapp.accompanyingparents.view.mapper.UserProfileMapper;
 import com.webapp.accompanyingparents.model.Account;
 import com.webapp.accompanyingparents.model.Role;
@@ -134,6 +136,25 @@ public class UserController extends ABasicController {
 
         apiMessageDto.setResult(true);
         apiMessageDto.setMessage("Create account for Expert successfully.");
+        return apiMessageDto;
+    }
+
+    @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasPermission('USER', 'U')")
+    @Transactional
+    public ApiMessageDto<Long> updateUserProfile(@Valid @RequestBody UpdateUserProfileForm updateUserProfileForm, BindingResult bindingResult) {
+        ApiMessageDto<Long> apiMessageDto = new ApiMessageDto<>();
+        String email = getCurrentUser();
+        Account account = accountRepository.findAccountByEmail(email);
+        UserProfile userProfile = userProfileRepository.findById(account.getId()).orElse(null);
+        if (userProfile == null) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.USER_ERROR_NOT_FOUND);
+            return apiMessageDto;
+        }
+        userProfileMapper.mappingForUpdateUserProfile(updateUserProfileForm, userProfile);
+        userProfileRepository.save(userProfile);
+        apiMessageDto.setMessage("Update account success");
         return apiMessageDto;
     }
 }
