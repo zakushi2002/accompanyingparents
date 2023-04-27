@@ -117,7 +117,6 @@ public class CommentController extends ABasicController {
         return apiMessageDto;
     }
 
-    @PreAuthorize("hasPermission('COMMENT', 'L')")
     @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiMessageDto<ResponseListDto<CommentDto>> listComment(CommentCriteria commentCriteria, Pageable pageable) {
         ApiMessageDto<ResponseListDto<CommentDto>> apiMessageDto = new ApiMessageDto<>();

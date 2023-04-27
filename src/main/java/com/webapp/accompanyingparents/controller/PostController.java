@@ -94,7 +94,6 @@ public class PostController extends ABasicController {
         return apiMessageDto;
     }
 
-    @PreAuthorize("hasPermission('POST', 'L')")
     @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiMessageDto<ResponseListDto<PostDto>> listPost(PostCriteria postCriteria, Pageable pageable) {
         ApiMessageDto<ResponseListDto<PostDto>> apiMessageDto = new ApiMessageDto<>();
