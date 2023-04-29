@@ -8,7 +8,7 @@ import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {PostMapper.class})
+@Mapper(componentModel = "spring", uses = {PostMapper.class, AccountMapper.class})
 public interface CommentMapper {
     @Mapping(source = "contentComment", target = "content")
     @Mapping(source = "postId", target = "post.id")
@@ -24,6 +24,9 @@ public interface CommentMapper {
     @Mapping(source = "post", target = "postComment", qualifiedByName ="fromEntityToPostDtoShort")
     @Mapping(source = "content", target = "contentComment")
     @Mapping(source = "account", target = "accountComment")
+    @Mapping(source = "account.role", target = "accountComment.roleDto")
+    @Mapping(source = "createdDate", target = "comment.createdDate")
+    @Mapping(source = "createdDate", target = "comment.modifiedDate")
     @BeanMapping(ignoreByDefault = true)
     @Named("fromEntityToCommentDto")
     CommentDto fromEntityToCommentDto(Comment comment);

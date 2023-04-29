@@ -8,7 +8,7 @@ import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {AccountMapper.class, RoleMapper.class})
 public interface PostMapper {
     @Mapping(source = "titlePost", target = "title")
     @Mapping(source = "contentPost", target = "content")
@@ -24,6 +24,9 @@ public interface PostMapper {
     @Mapping(source = "title", target = "titlePost")
     @Mapping(source = "content", target = "contentPost")
     @Mapping(source = "account", target = "accountPost")
+    @Mapping(source = "account.role", target = "accountPost.roleDto")
+    @Mapping(source = "createdDate", target = "post.createdDate")
+    @Mapping(source = "createdDate", target = "post.modifiedDate")
     @Named("fromEntityToPostDto")
     @BeanMapping(ignoreByDefault = true)
     PostDto fromEntityToPostDto(Post post);
