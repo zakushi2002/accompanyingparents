@@ -4,18 +4,23 @@ import com.webapp.accompanyingparents.config.constant.APConstant;
 import com.webapp.accompanyingparents.model.Account;
 import com.webapp.accompanyingparents.model.Role;
 import com.webapp.accompanyingparents.model.UserProfile;
+import com.webapp.accompanyingparents.model.criteria.AccountCriteria;
 import com.webapp.accompanyingparents.model.repository.AccountRepository;
 import com.webapp.accompanyingparents.model.repository.RoleRepository;
 import com.webapp.accompanyingparents.model.repository.UserProfileRepository;
 import com.webapp.accompanyingparents.view.dto.ApiMessageDto;
 import com.webapp.accompanyingparents.view.dto.ApiResponse;
 import com.webapp.accompanyingparents.view.dto.ErrorCode;
+import com.webapp.accompanyingparents.view.dto.ResponseListDto;
+import com.webapp.accompanyingparents.view.dto.account.AccountCMSDto;
 import com.webapp.accompanyingparents.view.form.account.CreateAccountAdminForm;
 import com.webapp.accompanyingparents.view.form.account.UpdateAccountAdminForm;
 import com.webapp.accompanyingparents.view.form.user.ChangePasswordForm;
 import com.webapp.accompanyingparents.view.mapper.AccountMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -155,15 +160,6 @@ public class AccountController extends ABasicController {
         return apiMessageDto;
     }
 
-    /*@GetMapping("/logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            new SecurityContextLogoutHandler().logout(request, response, auth);
-        }
-        return "redirect:/login?logout";
-    }*/
-
     @PreAuthorize("hasPermission('PASSWORD', 'U')")
     @PutMapping(value = "/change-password")
     public ApiMessageDto<Long> changePassword(@Valid @RequestBody ChangePasswordForm changePasswordForm, BindingResult bindingResult) {
@@ -179,6 +175,17 @@ public class AccountController extends ABasicController {
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         accountRepository.save(account);
         apiMessageDto.setMessage("Change password success");
+        return apiMessageDto;
+    }
+
+    @PreAuthorize("hasPermission('ACCOUNT', 'L')")
+    @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiMessageDto<ResponseListDto<AccountCMSDto>> listAccountCMS(AccountCriteria accountCriteria, Pageable pageable) {
+        ApiMessageDto<ResponseListDto<AccountCMSDto>> apiMessageDto = new ApiMessageDto<>();
+        Page<Account> page = accountRepository.findAll(accountCriteria.getSpecification(), pageable);
+        ResponseListDto<AccountCMSDto> responseListDto = new ResponseListDto(accountMapper.fromEntitiesToAccountCMSDtoList(page.getContent()), page.getNumber(), page.getTotalElements(), page.getTotalPages());
+        apiMessageDto.setData(responseListDto);
+        apiMessageDto.setMessage("Get account list success");
         return apiMessageDto;
     }
 }

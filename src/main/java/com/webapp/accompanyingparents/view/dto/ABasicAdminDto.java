@@ -1,22 +1,20 @@
 package com.webapp.accompanyingparents.view.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 @Data
 public abstract class ABasicAdminDto {
-    public void render() {
-        Long id = getId();
-        Integer status = getStatus();
-        LocalDateTime createdDate = getCreatedDate();
-        LocalDateTime modifiedDate = getModifiedDate();
-    }
+    @ApiModelProperty(name = "id")
+    private Long id;
 
-    protected abstract Long getId();
+    @ApiModelProperty(name = "status")
+    private Integer status;
 
-    protected abstract Integer getStatus();
+    @ApiModelProperty(name = "modifiedDate")
+    private LocalDateTime modifiedDate;
 
-    protected abstract LocalDateTime getCreatedDate();
-
-    protected abstract LocalDateTime getModifiedDate();
+    @ApiModelProperty(name = "createdDate")
+    private LocalDateTime createdDate;
 }

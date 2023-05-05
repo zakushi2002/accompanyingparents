@@ -18,4 +18,10 @@ public interface RoleMapper {
 
     @IterableMapping(elementTargetType = RoleDto.class, qualifiedByName = "fromEntityToRoleDto")
     List<RoleDto> fromEntitiesToRoleDtoList(List<Role> roles);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "name", target = "name")
+    @BeanMapping(ignoreByDefault = true)
+    @Named("fromEntityCMSToRoleDto")
+    RoleDto fromEntityCMSToRoleDto(Role role);
 }

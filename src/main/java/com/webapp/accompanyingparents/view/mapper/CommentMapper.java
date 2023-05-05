@@ -20,13 +20,13 @@ public interface CommentMapper {
     @BeanMapping(ignoreByDefault = true)
     void mappingForUpdateComment(UpdateCommentForm updateCommentForm, @MappingTarget Comment comment);
 
-    @Mapping(source = "id", target = "comment.id")
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "post", target = "postComment", qualifiedByName ="fromEntityToPostDtoShort")
     @Mapping(source = "content", target = "contentComment")
     @Mapping(source = "account", target = "accountComment")
     @Mapping(source = "account.role", target = "accountComment.roleDto")
-    @Mapping(source = "createdDate", target = "comment.createdDate")
-    @Mapping(source = "createdDate", target = "comment.modifiedDate")
+    @Mapping(source = "createdDate", target = "createdDate")
+    @Mapping(source = "createdDate", target = "modifiedDate")
     @BeanMapping(ignoreByDefault = true)
     @Named("fromEntityToCommentDto")
     CommentDto fromEntityToCommentDto(Comment comment);

@@ -2,6 +2,7 @@ package com.webapp.accompanyingparents.controller;
 
 import com.webapp.accompanyingparents.config.security.jwt.JwtTokenUtil;
 import com.webapp.accompanyingparents.model.Account;
+import com.webapp.accompanyingparents.model.repository.AccountRepository;
 import com.webapp.accompanyingparents.view.dto.ApiMessageDto;
 import com.webapp.accompanyingparents.view.dto.ErrorCode;
 import com.webapp.accompanyingparents.view.dto.token.AuthenticationTokenDto;
@@ -15,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/api/token")
@@ -25,6 +27,8 @@ public class AuthenticationController {
     AuthenticationManager authenticationManager;
     @Autowired
     JwtTokenUtil jwtTokenUtil;
+    @Autowired
+    AccountRepository accountRepository;
 
     /**
      * Đăng nhập tạo token
@@ -43,6 +47,11 @@ public class AuthenticationController {
             authenticationTokenDto.setToken(accessToken);
             authenticationTokenDto.setRole(user.getRole().getName());
             authenticationTokenDto.setEmail(user.getUsername());
+            // setLastLogin
+            Account account = accountRepository.findAccountByEmail(user.getUsername());
+            account.setLastLogin(new Date());
+            accountRepository.save(account);
+
             apiMessageDto.setResult(true);
             apiMessageDto.setData(authenticationTokenDto);
             return apiMessageDto;
