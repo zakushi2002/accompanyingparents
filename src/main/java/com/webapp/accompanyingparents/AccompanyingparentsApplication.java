@@ -7,15 +7,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.annotation.PostConstruct;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.TimeZone;
+import java.time.Clock;
 
 @SpringBootApplication
 public class AccompanyingparentsApplication {
     @PostConstruct
     public void init() {
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));   // It will set UTC timezone
-        System.out.println("Spring boot application running in UTC timezone :" + new Date());   // It will print UTC timezone
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));   // It will set UTC timezone
+        System.out.println("Spring boot application running in ICT timezone :" + new Date());   // It will print UTC timezone
     }
 
     public static void main(String[] args) {
@@ -25,5 +27,10 @@ public class AccompanyingparentsApplication {
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public Clock clock() {
+        return Clock.system(ZoneId.of("Asia/Ho_Chi_Minh"));
     }
 }

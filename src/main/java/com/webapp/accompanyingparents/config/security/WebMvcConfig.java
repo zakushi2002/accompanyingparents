@@ -19,8 +19,10 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.TimeZone;
 
 @Configuration
 @EnableWebMvc
@@ -42,6 +44,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         builder.dateFormat(new SimpleDateFormat(APConstant.DATE_TIME_FORMAT));
         builder.serializers(new LocalDateSerializer(DateTimeFormatter.ofPattern(APConstant.DATE_FORMAT)));
         builder.serializers(new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(APConstant.DATE_TIME_FORMAT)));
+        builder.timeZone("Asia/Ho_Chi_Minh");
         builder.indentOutput(true);
         converters.add(new MappingJackson2HttpMessageConverter(builder.build()));
         converters.add(new MappingJackson2XmlHttpMessageConverter(builder.createXmlMapper(true).build()));
@@ -51,6 +54,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addFormatters(FormatterRegistry registry) {
         DateFormatter dateFormatter = new DateFormatter(APConstant.DATE_TIME_FORMAT);
+        dateFormatter.setTimeZone(TimeZone.getTimeZone(ZoneId.of("Asia/Ho_Chi_Minh")));
         dateFormatter.setLenient(true);
         registry.addFormatter(dateFormatter);
     }

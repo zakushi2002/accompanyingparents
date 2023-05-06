@@ -61,6 +61,7 @@ public class AccountController extends ABasicController {
             apiMessageDto.setCode(ErrorCode.ACCOUNT_ERROR_UNKNOWN);
             return apiMessageDto;
         }
+        String email = getCurrentUser();
         account = new Account();
         account.setEmail(createAccountAdminForm.getEmail());
         account.setPassword(passwordEncoder.encode(createAccountAdminForm.getPassword()));
@@ -69,10 +70,10 @@ public class AccountController extends ABasicController {
         account.setStatus(createAccountAdminForm.getStatus());
         account.setAvatarPath(createAccountAdminForm.getAvatarPath());
         account.setIsSuperAdmin(false);
-        account.setCreatedBy(account.getEmail());
-        account.setModifiedBy(account.getEmail());
+        account.setCreatedBy(email);
+        account.setModifiedBy(email);
         accountRepository.save(account);
-        apiMessageDto.setMessage("Create account super admin success");
+        apiMessageDto.setMessage("Create account admin success");
         return apiMessageDto;
     }
 
@@ -106,7 +107,7 @@ public class AccountController extends ABasicController {
         account.setStatus(updateAccountAdminForm.getStatus());
         accountRepository.save(account);
 
-        apiMessageDto.setMessage("Update account super admin success");
+        apiMessageDto.setMessage("Update account admin success");
         return apiMessageDto;
     }
 
@@ -146,7 +147,7 @@ public class AccountController extends ABasicController {
             apiMessageDto.setCode(ErrorCode.USER_ERROR_NOT_FOUND);
             return apiMessageDto;
         }
-        if (!account.getRole().getName().trim().equals(APConstant.ROLE_SUPER_ADMIN)) {
+        if (!account.getRole().getName().trim().equals(APConstant.ROLE_SUPER_ADMIN) && !account.getRole().getName().trim().equals(APConstant.ROLE_ADMIN)) {
             UserProfile userProfile = userProfileRepository.findUserProfileByAccountEmail(account.getEmail());
             if (userProfile == null) {
                 apiMessageDto.setResult(false);

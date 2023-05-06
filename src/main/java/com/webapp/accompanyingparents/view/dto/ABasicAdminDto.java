@@ -3,7 +3,8 @@ package com.webapp.accompanyingparents.view.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.Date;
+
 @Data
 public abstract class ABasicAdminDto {
     @ApiModelProperty(name = "id")
@@ -13,8 +14,8 @@ public abstract class ABasicAdminDto {
     private Integer status;
 
     @ApiModelProperty(name = "modifiedDate")
-    private LocalDateTime modifiedDate;
+    private Date modifiedDate;
 
     @ApiModelProperty(name = "createdDate")
-    private LocalDateTime createdDate;
+    private Date createdDate;
 }
