@@ -55,7 +55,7 @@ public class AccountController extends ABasicController {
             apiMessageDto.setCode(ErrorCode.ACCOUNT_ERROR_EMAIL_EXIST);
             return apiMessageDto;
         }
-        Role role = roleRepository.findFirstByName(createAccountAdminForm.getRoleName());
+        Role role = roleRepository.findFirstByName(APConstant.ROLE_ADMIN);
         if (role == null) {
             apiMessageDto.setResult(false);
             apiMessageDto.setCode(ErrorCode.ACCOUNT_ERROR_UNKNOWN);
@@ -67,7 +67,7 @@ public class AccountController extends ABasicController {
         account.setPassword(passwordEncoder.encode(createAccountAdminForm.getPassword()));
         account.setFullName(createAccountAdminForm.getFullName());
         account.setRole(role);
-        account.setStatus(createAccountAdminForm.getStatus());
+        account.setStatus(APConstant.STATUS_ACTIVE);
         account.setAvatarPath(createAccountAdminForm.getAvatarPath());
         account.setIsSuperAdmin(false);
         account.setCreatedBy(email);
