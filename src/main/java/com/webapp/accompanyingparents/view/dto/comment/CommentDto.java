@@ -10,4 +10,6 @@ public class CommentDto extends ABasicAdminDto {
     private PostDto postComment;
     private String contentComment;
     private AccountDto accountComment;
+    private CommentDto commentDto;
+    private Boolean hasChild;
 }

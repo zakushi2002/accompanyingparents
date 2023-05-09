@@ -23,10 +23,11 @@ public interface PostMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "title", target = "titlePost")
     @Mapping(source = "content", target = "contentPost")
+    @Mapping(source = "type", target = "typePost")
     @Mapping(source = "account", target = "accountPost")
     @Mapping(source = "account.role", target = "accountPost.roleDto")
     @Mapping(source = "createdDate", target = "createdDate")
-    @Mapping(source = "createdDate", target = "modifiedDate")
+    @Mapping(source = "modifiedDate", target = "modifiedDate")
     @Named("fromEntityToPostDto")
     @BeanMapping(ignoreByDefault = true)
     PostDto fromEntityToPostDto(Post post);

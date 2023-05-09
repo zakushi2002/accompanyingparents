@@ -3,8 +3,10 @@ package com.webapp.accompanyingparents.controller;
 import com.webapp.accompanyingparents.config.constant.APConstant;
 import com.webapp.accompanyingparents.model.Account;
 import com.webapp.accompanyingparents.model.Comment;
+import com.webapp.accompanyingparents.model.IPost;
 import com.webapp.accompanyingparents.model.Post;
 import com.webapp.accompanyingparents.model.criteria.PostCriteria;
+import com.webapp.accompanyingparents.model.decorators.ForumPost;
 import com.webapp.accompanyingparents.model.repository.AccountRepository;
 import com.webapp.accompanyingparents.model.repository.CommentRepository;
 import com.webapp.accompanyingparents.model.repository.PostRepository;
@@ -55,6 +57,18 @@ public class PostController extends ABasicController {
             return apiMessageDto;
         }
         Post post = postMapper.formCreatePost(createPostForm);
+        // Apply Decorator Pattern
+        IPost iPost = post;
+        if (createPostForm.getTypePost().equals(2)) {
+            iPost = new ForumPost(post);
+            post.setType(iPost.getClassify());
+        } else if (createPostForm.getTypePost().equals(1)) {
+            post.setType(iPost.getClassify());
+        } else {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.POST_ERROR_TYPE);
+            return apiMessageDto;
+        }
         post.setAccount(account);
         post.setCreatedBy(account.getEmail());
         post.setModifiedBy(account.getEmail());

@@ -18,4 +18,7 @@ public class CreatePostForm {
     @NotNull(message = "contentPost can not be null")
     @ApiModelProperty(name = "contentPost", required = true)
     private String contentPost;
+    @NotNull(message = "typePost can not be null")
+    @ApiModelProperty(name = "typePost", required = true)
+    private Integer typePost;
 }

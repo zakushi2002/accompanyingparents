@@ -69,6 +69,7 @@ public class ErrorCode {
     public static final String POST_ERROR_EXIST = "ERROR-POST-0002";
     public static final String POST_ERROR_UPDATE = "ERROR-POST-0003";
     public static final String POST_ERROR_NOT_FOUND = "ERROR-POST-0004";
+    public static final String POST_ERROR_TYPE = "ERROR-POST-0005";
     /**
      * Starting error code COMMENT
      */

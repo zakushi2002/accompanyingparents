@@ -17,6 +17,7 @@ public class PostCriteria implements Serializable {
     private Long id;
     private Long accountId;
     private String keyword;
+    private Integer type;
     private Integer status;
 
     public Specification<Post> getSpecification() {
@@ -29,6 +30,9 @@ public class PostCriteria implements Serializable {
 
                 if (getId() != null) {
                     predicates.add(cb.equal(root.get("id"), getId()));
+                }
+                if (getType() != null) {
+                    predicates.add(cb.equal(root.get("type"), getType()));
                 }
                 if (!StringUtils.isEmpty(getKeyword())) {
                     predicates.add(cb.like(cb.lower(root.get("title")), "%" + getKeyword().toLowerCase() + "%"));

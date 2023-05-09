@@ -17,4 +17,6 @@ public class CreateCommentForm {
     @NotNull(message = "postId can not be null")
     @ApiModelProperty(name = "postId", required = true)
     private Long postId;
+    @ApiModelProperty(name = "parentId")
+    private Long parentId;
 }

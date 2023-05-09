@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @EntityListeners(AuditingEntityListener.class)
-public class Post extends Auditable<String> {
+public class Post extends Auditable<String> implements IPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,4 +24,10 @@ public class Post extends Auditable<String> {
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "account_id")
     private Account account;
+    private Integer type;
+
+    @Override
+    public Integer getClassify() {
+        return 1;
+    }
 }

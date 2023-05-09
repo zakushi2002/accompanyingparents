@@ -13,4 +13,6 @@ public class PostDto extends ABasicAdminDto {
     private String contentPost;
     @ApiModelProperty(name = "accountPost")
     private AccountDto accountPost;
+    @ApiModelProperty(name = "typePost")
+    private Integer typePost;
 }

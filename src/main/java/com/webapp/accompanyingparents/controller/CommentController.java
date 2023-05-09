@@ -46,7 +46,6 @@ public class CommentController extends ABasicController {
     @Transactional
     public ApiMessageDto<Long> createComment(@RequestBody @Valid CreateCommentForm createCommentForm, BindingResult bindingResult) {
         ApiMessageDto<Long> apiMessageDto = new ApiMessageDto<>();
-
         Post post = postRepository.findById(createCommentForm.getPostId()).orElse(null);
         if (post == null) {
             apiMessageDto.setResult(false);
@@ -61,9 +60,18 @@ public class CommentController extends ABasicController {
             return apiMessageDto;
         }
         Comment comment = commentMapper.formCreateComment(createCommentForm);
+        if (createCommentForm.getParentId() != null) {
+            Comment parent = commentRepository.findById(createCommentForm.getParentId()).orElse(null);
+            if (parent != null) {
+                comment.setParent(parent);
+                parent.setHasChild(true);
+                commentRepository.save(parent);
+            }
+        }
+        //Comment comment = commentMapper.formCreateComment(createCommentForm);
         comment.setAccount(account);
-        comment.setCreatedBy(account.getEmail());
-        comment.setModifiedBy(account.getEmail());
+        comment.setCreatedBy(email);
+        comment.setModifiedBy(email);
         commentRepository.save(comment);
         apiMessageDto.setResult(true);
         apiMessageDto.setMessage("Create comment successfully.");
@@ -110,8 +118,7 @@ public class CommentController extends ABasicController {
             apiMessageDto.setCode(ErrorCode.COMMENT_ERROR_NOT_FOUND);
             return apiMessageDto;
         }
-        CommentDto commentDto = commentMapper.fromEntityToCommentDto(comment);
-        apiMessageDto.setData(commentDto);
+        apiMessageDto.setData(commentMapper.fromEntityToCommentDto(comment));
         apiMessageDto.setResult(true);
         apiMessageDto.setMessage("Get comment success.");
         return apiMessageDto;
@@ -179,6 +186,13 @@ public class CommentController extends ABasicController {
             return apiMessageDto;
         }
         commentRepository.deleteById(comment.getId());
+        if (comment.getParent() != null) {
+            Comment parent = comment.getParent();
+            if (commentRepository.findCommentsByParentId(parent.getId()).isEmpty()) {
+                parent.setHasChild(false);
+                commentRepository.save(parent);
+            }
+        }
         apiMessageDto.setResult(true);
         apiMessageDto.setMessage("Delete post success.");
         return apiMessageDto;
