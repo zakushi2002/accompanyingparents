@@ -49,7 +49,7 @@ public class AccountController extends ABasicController {
     @PostMapping(value = "/create-admin", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiMessageDto<String> createSuperAdmin(@Valid @RequestBody CreateAccountAdminForm createAccountAdminForm, BindingResult bindingResult) {
         ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
-        Account account = accountRepository.findAccountByEmail(createAccountAdminForm.getEmail());
+        Account account = accountRepository.findAccountByEmail(createAccountAdminForm.getUserEmail());
         if (account != null) {
             apiMessageDto.setResult(false);
             apiMessageDto.setCode(ErrorCode.ACCOUNT_ERROR_EMAIL_EXIST);
@@ -63,12 +63,12 @@ public class AccountController extends ABasicController {
         }
         String email = getCurrentUser();
         account = new Account();
-        account.setEmail(createAccountAdminForm.getEmail());
-        account.setPassword(passwordEncoder.encode(createAccountAdminForm.getPassword()));
-        account.setFullName(createAccountAdminForm.getFullName());
+        account.setEmail(createAccountAdminForm.getUserEmail());
+        account.setPassword(passwordEncoder.encode(createAccountAdminForm.getUserPassword()));
+        account.setFullName(createAccountAdminForm.getUserFullName());
         account.setRole(role);
         account.setStatus(APConstant.STATUS_ACTIVE);
-        account.setAvatarPath(createAccountAdminForm.getAvatarPath());
+        account.setAvatarPath(createAccountAdminForm.getUserAvatar());
         account.setIsSuperAdmin(false);
         account.setCreatedBy(email);
         account.setModifiedBy(email);

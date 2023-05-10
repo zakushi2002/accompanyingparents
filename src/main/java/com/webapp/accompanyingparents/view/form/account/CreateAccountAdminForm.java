@@ -10,15 +10,16 @@ import javax.validation.constraints.NotEmpty;
 @Data
 @ApiModel
 public class CreateAccountAdminForm {
-    @NotEmpty(message = "email can not be null")
-    @ApiModelProperty(name = "email", required = true)
+    @NotEmpty(message = "userEmail can not be null")
+    @ApiModelProperty(name = "userEmail", required = true)
     @Email
-    private String email;
-    @NotEmpty(message = "password can not be null")
-    @ApiModelProperty(name = "password", required = true)
-    private String password;
-    @NotEmpty(message = "fullName can not be null")
-    @ApiModelProperty(name = "fullName", example = "Toan Huynh Thanh Nguyen", required = true)
-    private String fullName;
-    private String avatarPath;
+    private String userEmail;
+    @NotEmpty(message = "userPassword can not be null")
+    @ApiModelProperty(name = "userPassword", required = true)
+    private String userPassword;
+    @NotEmpty(message = "userFullName can not be null")
+    @ApiModelProperty(name = "userFullName", example = "Toan Huynh Thanh Nguyen", required = true)
+    private String userFullName;
+    @ApiModelProperty(name = "userAvatar")
+    private String userAvatar;
 }
