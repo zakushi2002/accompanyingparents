@@ -26,7 +26,8 @@ public interface CommentMapper {
     @Mapping(source = "account", target = "accountComment")
     @Mapping(source = "account.role", target = "accountComment.roleDto")
     @Mapping(source = "createdDate", target = "createdDate")
-    @Mapping(source = "createdDate", target = "modifiedDate")
+    @Mapping(source = "modifiedDate", target = "modifiedDate")
+    @Mapping(source = "hasChild", target = "hasChild")
     @BeanMapping(ignoreByDefault = true)
     @Named("fromEntityToCommentDto")
     CommentDto fromEntityToCommentDto(Comment comment);
