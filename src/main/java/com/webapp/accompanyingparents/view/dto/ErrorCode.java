@@ -41,6 +41,8 @@ public class ErrorCode {
     public static final String USER_ERROR_EXIST = "ERROR-USER-0002";
     public static final String USER_ERROR_UPDATE = "ERROR-USER-0003";
     public static final String USER_ERROR_NOT_FOUND = "ERROR-USER-0004";
+    public static final String USER_ERROR_OTP_INVALID = "ERROR-USER-0005";
+    public static final String USER_ERROR_OTP_EXPIRED = "ERROR-USER-0006";
     /**
      * Starting error code Employee
      */

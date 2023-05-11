@@ -1,6 +1,7 @@
 package com.webapp.accompanyingparents.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.webapp.accompanyingparents.config.constant.APConstant;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -79,5 +80,13 @@ public class Account extends Auditable<String> implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public boolean isOTPRequired() {
+        if (this.resetPwdCode == null) {
+            return false;
+        }
+        long otpRequestedTime = this.resetPwdTime.getTime();
+        return otpRequestedTime + APConstant.OTP_VALID_DURATION >= System.currentTimeMillis(); // OTP expires
     }
 }

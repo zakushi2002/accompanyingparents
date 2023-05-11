@@ -1,7 +1,10 @@
 package com.webapp.accompanyingparents.controller;
 
 import com.webapp.accompanyingparents.config.constant.APConstant;
-import com.webapp.accompanyingparents.view.dto.ApiResponse;
+import com.webapp.accompanyingparents.service.APService;
+import com.webapp.accompanyingparents.service.CommonAsyncService;
+import com.webapp.accompanyingparents.view.form.account.GetOTPForm;
+import com.webapp.accompanyingparents.view.form.account.OTPForm;
 import com.webapp.accompanyingparents.view.form.user.UpdateUserProfileForm;
 import com.webapp.accompanyingparents.view.mapper.UserProfileMapper;
 import com.webapp.accompanyingparents.model.Account;
@@ -24,6 +27,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/v1/user")
@@ -40,6 +44,10 @@ public class UserController extends ABasicController {
     AccountRepository accountRepository;
     @Autowired
     RoleRepository roleRepository;
+    @Autowired
+    CommonAsyncService commonAsyncService;
+    @Autowired
+    APService apService;
 
     /**
      * Đăng ký tài khoản USER
@@ -129,7 +137,7 @@ public class UserController extends ABasicController {
         user.setCreatedBy(email);
         user.setModifiedBy(email);
 
-        account = accountRepository.save(user.getAccount());
+        accountRepository.save(user.getAccount());
 
         // Tạo expert profile
         userProfileRepository.save(user);
@@ -155,6 +163,52 @@ public class UserController extends ABasicController {
         userProfileMapper.mappingForUpdateUserProfile(updateUserProfileForm, userProfile);
         userProfileRepository.save(userProfile);
         apiMessageDto.setMessage("Update account success");
+        return apiMessageDto;
+    }
+
+    @PutMapping(value = "/send-otp-code", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
+    public ApiMessageDto<Long> sendOTPCode(@Valid @RequestBody GetOTPForm getOTPForm, BindingResult bindingResult) {
+        ApiMessageDto<Long> apiMessageDto = new ApiMessageDto<>();
+        Account account = accountRepository.findAccountByEmail(getOTPForm.getEmail());
+        if (account == null) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.USER_ERROR_NOT_FOUND);
+            return apiMessageDto;
+        }
+        String otp = apService.getOTPForgetPassword();
+        account.setResetPwdCode(otp);
+        account.setResetPwdTime(new Date());
+        accountRepository.save(account);
+        String message = "<p>Hello " + account.getFullName() + ",</p>"
+                + "<p>For forgot password, you're required to use the following One-Time Password (OTP) to change password:</p>"
+                + "<p><b>" + otp + "</b></p>"
+                + "<br>"
+                + "<p>Note: this OTP is set to expire in 5 minutes.</p>";
+        commonAsyncService.sendEmail(getOTPForm.getEmail(), message, APConstant.OTP_SUBJECT_EMAIL);
+        apiMessageDto.setMessage("Send OTP successfully");
+        return apiMessageDto;
+    }
+
+    @PutMapping(value = "/check-otp-code", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
+    public ApiMessageDto<Long> checkOTPCode(@Valid @RequestBody OTPForm otp) {
+        ApiMessageDto<Long> apiMessageDto = new ApiMessageDto<>();
+        Account account = accountRepository.findAccountByResetPwdCode(otp.getOtp());
+        if (account == null) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.USER_ERROR_OTP_INVALID);
+            return apiMessageDto;
+        }
+        if (!account.isOTPRequired()) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.USER_ERROR_OTP_EXPIRED);
+            return apiMessageDto;
+        }
+        account.setResetPwdCode(null);
+        account.setResetPwdTime(null);
+        accountRepository.save(account);
+        apiMessageDto.setMessage("Correct OTP code");
         return apiMessageDto;
     }
 }

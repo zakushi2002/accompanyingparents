@@ -3,6 +3,8 @@ package com.webapp.accompanyingparents.config.constant;
 import java.util.Objects;
 
 public class APConstant {
+    public static final long OTP_VALID_DURATION = 5 * 60 * 1000;
+    public static final String OTP_SUBJECT_EMAIL = "One-Time Password (OTP) - Expire in 5 minutes!";
     public static final String DATE_FORMAT = "dd/MM/yyyy";
     public static final String DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
     public static final String SESSION_KEY = "user_session";

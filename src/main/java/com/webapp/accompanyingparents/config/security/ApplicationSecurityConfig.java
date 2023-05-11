@@ -45,7 +45,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         );
 //.accessDecisionManager(unanimous());
         http.authorizeRequests()
-                .antMatchers("/api/token", "/v1/user/register", "/v1/post/list", "/v1/comment/list").permitAll()
+                .antMatchers("/api/token", "/v1/user/register", "/v1/post/list", "/v1/comment/list", "/v1/user/send-otp-code", "/v1/user/check-otp-code").permitAll()
                 .anyRequest().authenticated();
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
         ;/*.logout()
