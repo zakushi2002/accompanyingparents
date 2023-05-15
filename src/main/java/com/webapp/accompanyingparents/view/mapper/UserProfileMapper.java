@@ -20,6 +20,7 @@ public interface UserProfileMapper {
     @BeanMapping(ignoreByDefault = true)
     UserProfile formCreateUserProfile(CreateUserForm createUserForm);
 
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "account.email", target = "userEmail")
     @Mapping(source = "account.avatarPath", target = "userAvatar")
     @Mapping(source = "account.fullName", target = "userFullName")
