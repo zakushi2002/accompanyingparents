@@ -79,4 +79,9 @@ public class ErrorCode {
     public static final String COMMENT_ERROR_EXIST = "ERROR-COMMENT-0002";
     public static final String COMMENT_ERROR_UPDATE = "ERROR-COMMENT-0003";
     public static final String COMMENT_ERROR_NOT_FOUND = "ERROR-COMMENT-0004";
+    /**
+     * Starting error code BOOKMARK
+     */
+    public static final String BOOKMARK_ERROR_EXIST= "ERROR-BOOKMARK-0001";
+    public static final String BOOKMARK_ERROR_NOT_FOUND= "ERROR-BOOKMARK-0002";
 }

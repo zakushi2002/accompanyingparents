@@ -1,21 +1,23 @@
 package com.webapp.accompanyingparents.controller;
 
 import com.webapp.accompanyingparents.config.constant.APConstant;
-import com.webapp.accompanyingparents.model.Account;
-import com.webapp.accompanyingparents.model.Comment;
-import com.webapp.accompanyingparents.model.IPost;
-import com.webapp.accompanyingparents.model.Post;
+import com.webapp.accompanyingparents.model.*;
+import com.webapp.accompanyingparents.model.criteria.BookmarkCriteria;
 import com.webapp.accompanyingparents.model.criteria.PostCriteria;
 import com.webapp.accompanyingparents.model.decorators.ForumPost;
 import com.webapp.accompanyingparents.model.repository.AccountRepository;
+import com.webapp.accompanyingparents.model.repository.BookmarkRepository;
 import com.webapp.accompanyingparents.model.repository.CommentRepository;
 import com.webapp.accompanyingparents.model.repository.PostRepository;
 import com.webapp.accompanyingparents.view.dto.ApiMessageDto;
 import com.webapp.accompanyingparents.view.dto.ErrorCode;
 import com.webapp.accompanyingparents.view.dto.ResponseListDto;
+import com.webapp.accompanyingparents.view.dto.bookmark.BookmarkDto;
 import com.webapp.accompanyingparents.view.dto.post.PostDto;
+import com.webapp.accompanyingparents.view.form.bookmark.CreateBookmarkForm;
 import com.webapp.accompanyingparents.view.form.post.CreatePostForm;
 import com.webapp.accompanyingparents.view.form.post.UpdatePostForm;
+import com.webapp.accompanyingparents.view.mapper.BookmarkMapper;
 import com.webapp.accompanyingparents.view.mapper.PostMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,10 @@ public class PostController extends ABasicController {
     AccountRepository accountRepository;
     @Autowired
     CommentRepository commentRepository;
+    @Autowired
+    BookmarkRepository bookmarkRepository;
+    @Autowired
+    BookmarkMapper bookmarkMapper;
 
     @PreAuthorize("hasPermission('POST', 'C')")
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -192,9 +198,86 @@ public class PostController extends ABasicController {
                 commentRepository.deleteById(c.getId());
             }
         }
+
+        List<Bookmark> bookmarks = bookmarkRepository.findAllByPostId(post.getId());
+        if (bookmarks != null) {
+            for (Bookmark b : bookmarks) {
+                bookmarkRepository.deleteById(b.getId());
+            }
+        }
         postRepository.deleteById(post.getId());
         apiMessageDto.setResult(true);
         apiMessageDto.setMessage("Delete post success.");
+        return apiMessageDto;
+    }
+
+    @PreAuthorize("hasPermission('BOOKMARK', 'C')")
+    @PostMapping(value = "/add-bookmark", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
+    public ApiMessageDto<Long> addBookmark(@RequestBody @Valid CreateBookmarkForm createBookmarkForm, BindingResult bindingResult) {
+        ApiMessageDto<Long> apiMessageDto = new ApiMessageDto<>();
+        String email = getCurrentUser();
+        Account account = accountRepository.findAccountByEmail(email);
+        if (account == null) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.USER_ERROR_NOT_FOUND);
+            return apiMessageDto;
+        }
+        Post post = postRepository.findById(createBookmarkForm.getPostId()).orElse(null);
+        if (post == null) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.POST_ERROR_NOT_FOUND);
+            return apiMessageDto;
+        }
+        Bookmark bookmark = bookmarkRepository.findFirstByAccountAndPostId(account, post.getId());
+        if (bookmark != null) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.BOOKMARK_ERROR_EXIST);
+            return apiMessageDto;
+        }
+        bookmark = new Bookmark();
+        bookmark.setAccount(account);
+        bookmark.setPost(post);
+        bookmark.setCreatedBy(email);
+        bookmark.setModifiedBy(email);
+        bookmark.setStatus(APConstant.STATUS_ACTIVE);
+
+        bookmarkRepository.save(bookmark);
+        apiMessageDto.setResult(true);
+        apiMessageDto.setMessage("Add bookmark successfully.");
+        return apiMessageDto;
+    }
+
+    @PreAuthorize("hasPermission('BOOKMARK', 'D')")
+    @DeleteMapping(value = "/remove-bookmark/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiMessageDto<Long> removeBookmark(@PathVariable("id") Long bookmarkId) {
+        ApiMessageDto<Long> apiMessageDto = new ApiMessageDto<>();
+        String email = getCurrentUser();
+        Account account = accountRepository.findAccountByEmail(email);
+        if (account == null) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.USER_ERROR_NOT_FOUND);
+            return apiMessageDto;
+        }
+        Bookmark bookmark = bookmarkRepository.findById(bookmarkId).orElse(null);
+        if (bookmark == null) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.BOOKMARK_ERROR_NOT_FOUND);
+            return apiMessageDto;
+        }
+        bookmarkRepository.deleteById(bookmarkId);
+        apiMessageDto.setResult(true);
+        apiMessageDto.setMessage("Remove bookmark success.");
+        return apiMessageDto;
+    }
+    @PreAuthorize("hasPermission('BOOKMARK', 'L')")
+    @GetMapping(value = "/bookmark-list", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiMessageDto<ResponseListDto<BookmarkDto>> listBookMark(@Valid BookmarkCriteria bookmarkCriteria, Pageable pageable) {
+        ApiMessageDto<ResponseListDto<BookmarkDto>> apiMessageDto = new ApiMessageDto<>();
+        Page<Bookmark> page = bookmarkRepository.findAll(bookmarkCriteria.getSpecification(), pageable);
+        ResponseListDto<BookmarkDto> responseListDto = new ResponseListDto(bookmarkMapper.fromEntitiesToBookmarkDtoList(page.getContent()), page.getNumber(), page.getTotalElements(), page.getTotalPages());
+        apiMessageDto.setData(responseListDto);
+        apiMessageDto.setMessage("Get bookmark list success");
         return apiMessageDto;
     }
 }

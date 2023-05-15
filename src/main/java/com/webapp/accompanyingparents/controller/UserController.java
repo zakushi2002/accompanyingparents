@@ -201,6 +201,9 @@ public class UserController extends ABasicController {
             return apiMessageDto;
         }
         if (!account.isOTPRequired()) {
+            account.setResetPwdCode(null);
+            account.setResetPwdTime(null);
+            accountRepository.save(account);
             apiMessageDto.setResult(false);
             apiMessageDto.setCode(ErrorCode.USER_ERROR_OTP_EXPIRED);
             return apiMessageDto;

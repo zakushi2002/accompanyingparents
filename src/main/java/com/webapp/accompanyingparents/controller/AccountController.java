@@ -1,13 +1,9 @@
 package com.webapp.accompanyingparents.controller;
 
 import com.webapp.accompanyingparents.config.constant.APConstant;
-import com.webapp.accompanyingparents.model.Account;
-import com.webapp.accompanyingparents.model.Role;
-import com.webapp.accompanyingparents.model.UserProfile;
+import com.webapp.accompanyingparents.model.*;
 import com.webapp.accompanyingparents.model.criteria.AccountCriteria;
-import com.webapp.accompanyingparents.model.repository.AccountRepository;
-import com.webapp.accompanyingparents.model.repository.RoleRepository;
-import com.webapp.accompanyingparents.model.repository.UserProfileRepository;
+import com.webapp.accompanyingparents.model.repository.*;
 import com.webapp.accompanyingparents.view.dto.ApiMessageDto;
 import com.webapp.accompanyingparents.view.dto.ApiResponse;
 import com.webapp.accompanyingparents.view.dto.ErrorCode;
@@ -28,6 +24,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/account")
@@ -44,6 +41,12 @@ public class AccountController extends ABasicController {
     UserProfileRepository userProfileRepository;
     @Autowired
     AccountMapper accountMapper;
+    @Autowired
+    BookmarkRepository bookmarkRepository;
+    @Autowired
+    PostRepository postRepository;
+    @Autowired
+    CommentRepository commentRepository;
 
     @PreAuthorize("hasPermission('ADMIN', 'C')")
     @PostMapping(value = "/create-admin", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -155,6 +158,30 @@ public class AccountController extends ABasicController {
                 return apiMessageDto;
             }
             userProfileRepository.deleteById(userProfile.getId());
+            List<Comment> comments = commentRepository.findCommentsByAccount(account);
+            if (comments != null) {
+                for (Comment c : comments) {
+                    commentRepository.deleteById(c.getId());
+                }
+            }
+            List<Post> posts = postRepository.findAllByAccount(account);
+            if (posts != null) {
+                for (Post p: posts) {
+                    List<Comment> commentsByPost = commentRepository.findCommentsByPostId(p.getId());
+                    if (commentsByPost != null) {
+                        for (Comment c : commentsByPost) {
+                            commentRepository.deleteById(c.getId());
+                        }
+                    }
+                    postRepository.deleteById(p.getId());
+                }
+            }
+            List<Bookmark> bookmarks = bookmarkRepository.findAllByAccount(account);
+            if (bookmarks != null) {
+                for (Bookmark b : bookmarks) {
+                    bookmarkRepository.deleteById(b.getId());
+                }
+            }
         }
         accountRepository.deleteById(accountId);
         apiMessageDto.setMessage("Delete Account success");
