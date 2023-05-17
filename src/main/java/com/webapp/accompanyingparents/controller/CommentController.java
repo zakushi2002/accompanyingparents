@@ -180,11 +180,6 @@ public class CommentController extends ABasicController {
             apiMessageDto.setCode(ErrorCode.USER_ERROR_NOT_FOUND);
             return apiMessageDto;
         }
-        if (comment.getAccount().getId().longValue() != account.getId().longValue()) {
-            apiMessageDto.setResult(false);
-            apiMessageDto.setCode(ErrorCode.COMMENT_ERROR_UPDATE);
-            return apiMessageDto;
-        }
         commentRepository.deleteById(comment.getId());
         if (comment.getParent() != null) {
             Comment parent = comment.getParent();
