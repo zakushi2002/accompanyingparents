@@ -124,7 +124,6 @@ public class PostController extends ABasicController {
         return apiMessageDto;
     }
 
-    @PreAuthorize("hasPermission('POST', 'V')")
     @GetMapping(value = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiMessageDto<PostDto> getPost(@PathVariable("id") Long id) {
         ApiMessageDto<PostDto> apiMessageDto = new ApiMessageDto<>();

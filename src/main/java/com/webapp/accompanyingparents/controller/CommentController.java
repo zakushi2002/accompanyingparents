@@ -108,7 +108,6 @@ public class CommentController extends ABasicController {
         return apiMessageDto;
     }
 
-    @PreAuthorize("hasPermission('COMMENT', 'V')")
     @GetMapping(value = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiMessageDto<CommentDto> getComment(@PathVariable("id") Long id) {
         ApiMessageDto<CommentDto> apiMessageDto = new ApiMessageDto<>();
