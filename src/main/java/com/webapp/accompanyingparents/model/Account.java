@@ -30,6 +30,7 @@ public class Account extends Auditable<String> implements UserDetails {
     @JsonIgnore
     private String password;
     private Date lastLogin;
+    @Column(columnDefinition = "LONGTEXT")
     private String avatarPath;
     private String resetPwdCode;
     private Date resetPwdTime;
@@ -37,6 +38,7 @@ public class Account extends Auditable<String> implements UserDetails {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
     private Role role;
+    private Integer attemptOTP;
 
     public Account(String email, String fullName, String password, String avatarPath, Boolean isSuperAdmin) {
         this.email = email;

@@ -21,7 +21,7 @@ public class Post extends Auditable<String> implements IPost {
     private String title;
     @Column(name = "content", columnDefinition = "LONGTEXT")
     private String content;
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "account_id")
     private Account account;
     private Integer type;

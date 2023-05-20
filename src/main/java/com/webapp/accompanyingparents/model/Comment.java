@@ -20,10 +20,10 @@ public class Comment extends Auditable<String> {
     private Long id;
     @Column(name = "content", columnDefinition = "LONGTEXT")
     private String content;
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "post_id")
     private Post post;
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "account_id")
     private Account account;
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
