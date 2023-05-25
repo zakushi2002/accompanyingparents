@@ -8,7 +8,9 @@ import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {AccountMapper.class, RoleMapper.class})
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        uses = {AccountMapper.class})
 public interface PostMapper {
     @Mapping(source = "titlePost", target = "title")
     @Mapping(source = "contentPost", target = "content")
@@ -24,8 +26,7 @@ public interface PostMapper {
     @Mapping(source = "title", target = "titlePost")
     @Mapping(source = "content", target = "contentPost")
     @Mapping(source = "type", target = "typePost")
-    @Mapping(source = "account", target = "accountPost")
-    @Mapping(source = "account.role", target = "accountPost.roleDto")
+    @Mapping(source = "account", target = "accountPost", qualifiedByName = "fromAccountForPostToDto")
     @Mapping(source = "createdDate", target = "createdDate")
     @Mapping(source = "modifiedDate", target = "modifiedDate")
     @Named("fromEntityToPostDto")

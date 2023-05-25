@@ -1,12 +1,11 @@
 package com.webapp.accompanyingparents.view.dto.permission;
 
+import com.webapp.accompanyingparents.view.dto.ABasicAdminDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class PermissionDto {
-    @ApiModelProperty(name = "id")
-    private Long id;
+public class PermissionDto extends ABasicAdminDto {
     @ApiModelProperty(name = "name")
     private String name;
     @ApiModelProperty(name = "action")

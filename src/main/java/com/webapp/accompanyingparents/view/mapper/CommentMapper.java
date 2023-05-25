@@ -8,7 +8,9 @@ import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {PostMapper.class, AccountMapper.class})
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        uses = {PostMapper.class, AccountMapper.class})
 public interface CommentMapper {
     @Mapping(source = "contentComment", target = "content")
     @Mapping(source = "postId", target = "post.id")

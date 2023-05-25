@@ -1,23 +1,20 @@
 package com.webapp.accompanyingparents.view.dto.account;
 
+import com.webapp.accompanyingparents.view.dto.ABasicAdminDto;
 import com.webapp.accompanyingparents.view.dto.role.RoleDto;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-public class AccountDto {
-    @ApiModelProperty(name = "id")
-    private Long id;
-    @ApiModelProperty(name = "email")
+public class AccountDto extends ABasicAdminDto {
     private String email;
-    @ApiModelProperty(name = "fullName")
     private String fullName;
-    @ApiModelProperty(name = "role")
-    private RoleDto roleDto;
-    @ApiModelProperty(name = "lastLogin")
     private Date lastLogin;
-    @ApiModelProperty(name = "avatarPath")
     private String avatarPath;
+    private String resetPwdCode;
+    private Date resetPwdTime;
+    private Boolean isSuperAdmin;
+    private RoleDto roleDto;
+    private Integer attemptOTP;
 }

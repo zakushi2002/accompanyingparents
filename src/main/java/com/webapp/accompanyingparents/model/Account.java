@@ -9,7 +9,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.*;
@@ -20,7 +19,6 @@ import java.util.*;
 @Getter
 @Setter
 @EntityListeners(AuditingEntityListener.class)
-@Component
 public class Account extends Auditable<String> implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,14 +37,6 @@ public class Account extends Auditable<String> implements UserDetails {
     @JoinColumn(name = "role_id")
     private Role role;
     private Integer attemptOTP;
-
-    public Account(String email, String fullName, String password, String avatarPath, Boolean isSuperAdmin) {
-        this.email = email;
-        this.fullName = fullName;
-        this.password = password;
-        this.avatarPath = avatarPath;
-        this.isSuperAdmin = isSuperAdmin;
-    }
 
     @Override
     public String getUsername() {

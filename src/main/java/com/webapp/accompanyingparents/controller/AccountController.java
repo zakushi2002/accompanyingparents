@@ -8,10 +8,10 @@ import com.webapp.accompanyingparents.view.dto.ApiMessageDto;
 import com.webapp.accompanyingparents.view.dto.ApiResponse;
 import com.webapp.accompanyingparents.view.dto.ErrorCode;
 import com.webapp.accompanyingparents.view.dto.ResponseListDto;
-import com.webapp.accompanyingparents.view.dto.account.AccountCMSDto;
+import com.webapp.accompanyingparents.view.dto.account.AccountDto;
 import com.webapp.accompanyingparents.view.form.account.CreateAccountAdminForm;
 import com.webapp.accompanyingparents.view.form.account.UpdateAccountAdminForm;
-import com.webapp.accompanyingparents.view.form.user.ChangePasswordForm;
+import com.webapp.accompanyingparents.view.form.account.ChangePasswordForm;
 import com.webapp.accompanyingparents.view.mapper.AccountMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -208,10 +208,10 @@ public class AccountController extends ABasicController {
 
     @PreAuthorize("hasPermission('ACCOUNT', 'L')")
     @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiMessageDto<ResponseListDto<AccountCMSDto>> listAccountCMS(AccountCriteria accountCriteria, Pageable pageable) {
-        ApiMessageDto<ResponseListDto<AccountCMSDto>> apiMessageDto = new ApiMessageDto<>();
+    public ApiMessageDto<ResponseListDto<AccountDto>> listAccountCMS(AccountCriteria accountCriteria, Pageable pageable) {
+        ApiMessageDto<ResponseListDto<AccountDto>> apiMessageDto = new ApiMessageDto<>();
         Page<Account> page = accountRepository.findAll(accountCriteria.getSpecification(), pageable);
-        ResponseListDto<AccountCMSDto> responseListDto = new ResponseListDto(accountMapper.fromEntitiesToAccountCMSDtoList(page.getContent()), page.getNumber(), page.getTotalElements(), page.getTotalPages());
+        ResponseListDto<AccountDto> responseListDto = new ResponseListDto(accountMapper.fromEntitiesToAccountCMSDtoList(page.getContent()), page.getNumber(), page.getTotalElements(), page.getTotalPages());
         apiMessageDto.setData(responseListDto);
         apiMessageDto.setMessage("Get account list success");
         return apiMessageDto;

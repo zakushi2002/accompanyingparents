@@ -1,4 +1,4 @@
-package com.webapp.accompanyingparents.view.form.user;
+package com.webapp.accompanyingparents.view.form.account;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

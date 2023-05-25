@@ -5,7 +5,9 @@ import com.webapp.accompanyingparents.service.APService;
 import com.webapp.accompanyingparents.service.CommonAsyncService;
 import com.webapp.accompanyingparents.view.form.account.GetOTPForm;
 import com.webapp.accompanyingparents.view.form.account.OTPForm;
+import com.webapp.accompanyingparents.view.form.user.ChangePasswordForgotForm;
 import com.webapp.accompanyingparents.view.form.user.UpdateUserProfileForm;
+import com.webapp.accompanyingparents.view.mapper.AccountMapper;
 import com.webapp.accompanyingparents.view.mapper.UserProfileMapper;
 import com.webapp.accompanyingparents.model.Account;
 import com.webapp.accompanyingparents.model.Role;
@@ -48,6 +50,8 @@ public class UserController extends ABasicController {
     CommonAsyncService commonAsyncService;
     @Autowired
     APService apService;
+    @Autowired
+    AccountMapper accountMapper;
 
     /**
      * Đăng ký tài khoản USER
@@ -212,6 +216,22 @@ public class UserController extends ABasicController {
         account.setResetPwdTime(null);
         accountRepository.save(account);
         apiMessageDto.setMessage("Correct OTP code");
+        return apiMessageDto;
+    }
+
+    @PutMapping(value = "/change-password")
+    public ApiMessageDto<Long> changePassword(@Valid @RequestBody ChangePasswordForgotForm changePasswordForgotForm, BindingResult bindingResult) {
+        ApiMessageDto<Long> apiMessageDto = new ApiMessageDto<>();
+        Account account = accountRepository.findAccountByEmail(changePasswordForgotForm.getEmail());
+        if (account == null) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.USER_ERROR_NOT_FOUND);
+            return apiMessageDto;
+        }
+        accountMapper.mappingForgotChangePassword(changePasswordForgotForm, account);
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
+        accountRepository.save(account);
+        apiMessageDto.setMessage("Change password success");
         return apiMessageDto;
     }
 }
