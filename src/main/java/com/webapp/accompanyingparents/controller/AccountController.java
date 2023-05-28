@@ -159,29 +159,33 @@ public class AccountController extends ABasicController {
             }
             userProfileRepository.deleteById(userProfile.getId());
             List<Comment> comments = commentRepository.findCommentsByAccount(account);
-            if (comments != null) {
-                for (Comment c : comments) {
+            if (!comments.isEmpty()) {
+                commentRepository.deleteAllByAccount(account);
+                /*for (Comment c : comments) {
                     commentRepository.deleteById(c.getId());
-                }
+                }*/
+            }
+            List<Bookmark> bookmarks = bookmarkRepository.findAllByAccount(account);
+            if (!bookmarks.isEmpty()) {
+                bookmarkRepository.deleteAllByAccount(account);
+                /*for (Bookmark b : bookmarks) {
+                    bookmarkRepository.deleteById(b.getId());
+                }*/
             }
             List<Post> posts = postRepository.findAllByAccount(account);
-            if (posts != null) {
+            if (!posts.isEmpty()) {
                 for (Post p: posts) {
                     List<Comment> commentsByPost = commentRepository.findCommentsByPostId(p.getId());
-                    if (commentsByPost != null) {
-                        for (Comment c : commentsByPost) {
+                    if (!commentsByPost.isEmpty()) {
+                        commentRepository.deleteAllByPostId(p.getId());
+                        /*for (Comment c : commentsByPost) {
                             commentRepository.deleteById(c.getId());
-                        }
+                        }*/
                     }
                     postRepository.deleteById(p.getId());
                 }
             }
-            List<Bookmark> bookmarks = bookmarkRepository.findAllByAccount(account);
-            if (bookmarks != null) {
-                for (Bookmark b : bookmarks) {
-                    bookmarkRepository.deleteById(b.getId());
-                }
-            }
+
         }
         accountRepository.deleteById(accountId);
         apiMessageDto.setMessage("Delete Account success");

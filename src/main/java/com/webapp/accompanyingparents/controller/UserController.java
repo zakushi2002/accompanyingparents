@@ -1,8 +1,11 @@
 package com.webapp.accompanyingparents.controller;
 
 import com.webapp.accompanyingparents.config.constant.APConstant;
+import com.webapp.accompanyingparents.model.FileData;
+import com.webapp.accompanyingparents.model.repository.FileDataRepository;
 import com.webapp.accompanyingparents.service.APService;
 import com.webapp.accompanyingparents.service.CommonAsyncService;
+import com.webapp.accompanyingparents.service.FileStorageService;
 import com.webapp.accompanyingparents.view.form.account.GetOTPForm;
 import com.webapp.accompanyingparents.view.form.account.OTPForm;
 import com.webapp.accompanyingparents.view.form.user.ChangePasswordForgotForm;
@@ -27,6 +30,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.util.Date;
@@ -52,6 +57,10 @@ public class UserController extends ABasicController {
     APService apService;
     @Autowired
     AccountMapper accountMapper;
+    @Autowired
+    FileStorageService fileStorageService;
+    @Autowired
+    FileDataRepository fileDataRepository;
 
     /**
      * Đăng ký tài khoản USER
@@ -85,7 +94,7 @@ public class UserController extends ABasicController {
         user.setCreatedBy(account.getEmail());
         user.setModifiedBy(account.getEmail());
 
-        account = accountRepository.save(user.getAccount());
+        accountRepository.save(user.getAccount());
 
         // Tạo user profile
         userProfileRepository.save(user);
@@ -219,7 +228,7 @@ public class UserController extends ABasicController {
         return apiMessageDto;
     }
 
-    @PutMapping(value = "/change-password")
+    @PutMapping(value = "/change-password", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiMessageDto<Long> changePassword(@Valid @RequestBody ChangePasswordForgotForm changePasswordForgotForm, BindingResult bindingResult) {
         ApiMessageDto<Long> apiMessageDto = new ApiMessageDto<>();
         Account account = accountRepository.findAccountByEmail(changePasswordForgotForm.getEmail());
@@ -232,6 +241,25 @@ public class UserController extends ABasicController {
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         accountRepository.save(account);
         apiMessageDto.setMessage("Change password success");
+        return apiMessageDto;
+    }
+
+    @PostMapping(value = "/uploadFile", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiMessageDto<FileData> uploadFile(@RequestParam("file") MultipartFile file) {
+        ApiMessageDto<FileData> apiMessageDto = new ApiMessageDto<>();
+        String fileName = fileStorageService.storeFile(file);
+
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/downloadFile/")
+                .path(fileName)
+                .toUriString();
+        FileData fileData = new FileData(fileName, fileDownloadUri,
+                file.getContentType(), file.getSize());
+        fileData.setCreatedBy(getCurrentUser());
+        fileData.setModifiedBy(getCurrentUser());
+        fileDataRepository.save(fileData);
+        apiMessageDto.setData(fileData);
+        apiMessageDto.setMessage("Upload file success");
         return apiMessageDto;
     }
 }

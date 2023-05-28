@@ -11,4 +11,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, JpaSpec
     List<Comment> findCommentsByPostId(Long postId);
     List<Comment> findCommentsByParentId(Long parentId);
     List<Comment> findCommentsByAccount(Account account);
+    void deleteAllByAccount(Account account);
+    void deleteAllByPostId(Long postId);
 }
