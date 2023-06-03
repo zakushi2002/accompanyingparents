@@ -1,7 +1,6 @@
 package com.webapp.accompanyingparents.service.factorymethod;
 
 import com.webapp.accompanyingparents.model.repository.RoleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,7 +18,7 @@ public class AccountFactory {
             case EXPERT:
                 return new Expert(roleRepository);
             default:
-                throw new IllegalArgumentException("This service type is unsupported");
+                throw new IllegalArgumentException("This account type is unsupported");
         }
     }
 }
