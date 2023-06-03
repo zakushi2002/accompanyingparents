@@ -164,6 +164,7 @@ public class CommentController extends ABasicController {
 
     @PreAuthorize("hasPermission('COMMENT', 'D')")
     @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     public ApiMessageDto<Long> deleteComment(@PathVariable("id") Long id) {
         ApiMessageDto<Long> apiMessageDto = new ApiMessageDto<>();
         Comment comment = commentRepository.findById(id).orElse(null);

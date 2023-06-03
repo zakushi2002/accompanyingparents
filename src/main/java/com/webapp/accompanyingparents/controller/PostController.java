@@ -171,6 +171,7 @@ public class PostController extends ABasicController {
 
     @PreAuthorize("hasPermission('POST', 'D')")
     @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     public ApiMessageDto<Long> deletePost(@PathVariable("id") Long id) {
         ApiMessageDto<Long> apiMessageDto = new ApiMessageDto<>();
         Post post = postRepository.findById(id).orElse(null);
@@ -193,16 +194,18 @@ public class PostController extends ABasicController {
         }
         List<Comment> comments = commentRepository.findCommentsByPostId(post.getId());
         if (comments != null) {
-            for (Comment c : comments) {
+            commentRepository.deleteAllByPostId(post.getId());
+            /*for (Comment c : comments) {
                 commentRepository.deleteById(c.getId());
-            }
+            }*/
         }
 
         List<Bookmark> bookmarks = bookmarkRepository.findAllByPostId(post.getId());
         if (bookmarks != null) {
-            for (Bookmark b : bookmarks) {
+            bookmarkRepository.deleteAllByPostId(post.getId());
+            /*for (Bookmark b : bookmarks) {
                 bookmarkRepository.deleteById(b.getId());
-            }
+            }*/
         }
         postRepository.deleteById(post.getId());
         apiMessageDto.setResult(true);
@@ -249,6 +252,7 @@ public class PostController extends ABasicController {
 
     @PreAuthorize("hasPermission('BOOKMARK', 'D')")
     @DeleteMapping(value = "/remove-bookmark/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     public ApiMessageDto<Long> removeBookmark(@PathVariable("id") Long bookmarkId) {
         ApiMessageDto<Long> apiMessageDto = new ApiMessageDto<>();
         String email = getCurrentUser();

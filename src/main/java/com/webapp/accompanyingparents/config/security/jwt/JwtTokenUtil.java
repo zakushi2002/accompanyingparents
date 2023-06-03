@@ -16,7 +16,7 @@ public class JwtTokenUtil {
     /**
      * Set thời gian sống cho Token
      */
-    private static final long EXPIRE_DURATION = 31L * 24 * 60 * 60 * 1000; // 1h
+    private static final long EXPIRE_DURATION = 31L * 24 * 60 * 60 * 1000; // 31 days
     @Value("${app.jwt.secret}")
     private String secretKey;
 

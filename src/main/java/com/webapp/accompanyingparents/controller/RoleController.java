@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -41,6 +42,7 @@ public class RoleController extends ABasicController {
 
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasPermission('ROLE', 'C')")
+    @Transactional
     public ApiMessageDto<String> create(@Valid @RequestBody CreateRoleForm createRoleForm, BindingResult bindingResult) {
         ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
         Role role = roleRepository.findFirstByName(createRoleForm.getName());
@@ -72,6 +74,7 @@ public class RoleController extends ABasicController {
 
     @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasPermission('ROLE', 'U')")
+    @Transactional
     public ApiMessageDto<String> update(@Valid @RequestBody UpdateRoleForm updateRoleForm, BindingResult bindingResult) {
         ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
         Role role = roleRepository.findById(updateRoleForm.getId()).orElse(null);

@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -33,6 +34,7 @@ public class PermissionController extends ABasicController {
 
     @PreAuthorize("hasPermission('PERMISSION', 'C')")
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     public ApiMessageDto<String> create(@RequestBody CreatePermissionForm createPermissionForm, BindingResult bindingResult) {
         ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
 

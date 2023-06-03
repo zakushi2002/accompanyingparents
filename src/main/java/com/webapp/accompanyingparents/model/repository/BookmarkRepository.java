@@ -14,4 +14,5 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long>, JpaSp
 
     List<Bookmark> findAllByAccount(Account account);
     void deleteAllByAccount(Account account);
+    void deleteAllByPostId(Long postId);
 }

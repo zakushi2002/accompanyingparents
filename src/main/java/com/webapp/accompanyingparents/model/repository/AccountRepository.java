@@ -8,8 +8,6 @@ import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Long>, JpaSpecificationExecutor<Account> {
     Account findAccountByEmail(String email);
-
     Account findAccountByResetPwdCode(String resetPwdCode);
-
     Optional<Account> findByEmail(String email);
 }

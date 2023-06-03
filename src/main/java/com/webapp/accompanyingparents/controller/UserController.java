@@ -6,6 +6,9 @@ import com.webapp.accompanyingparents.model.repository.FileDataRepository;
 import com.webapp.accompanyingparents.service.APService;
 import com.webapp.accompanyingparents.service.CommonAsyncService;
 import com.webapp.accompanyingparents.service.FileStorageService;
+import com.webapp.accompanyingparents.service.factorymethod.AccountFactory;
+import com.webapp.accompanyingparents.service.factorymethod.AccountType;
+import com.webapp.accompanyingparents.service.factorymethod.IAccount;
 import com.webapp.accompanyingparents.view.form.account.GetOTPForm;
 import com.webapp.accompanyingparents.view.form.account.OTPForm;
 import com.webapp.accompanyingparents.view.form.user.ChangePasswordForgotForm;
@@ -61,6 +64,7 @@ public class UserController extends ABasicController {
     FileStorageService fileStorageService;
     @Autowired
     FileDataRepository fileDataRepository;
+    IAccount iAccount;
 
     /**
      * Đăng ký tài khoản USER
@@ -70,33 +74,39 @@ public class UserController extends ABasicController {
     public ApiMessageDto<Long> save(@RequestBody @Valid CreateUserForm signUp, BindingResult bindingResult) {
         ApiMessageDto<Long> apiMessageDto = new ApiMessageDto<>();
         Account account = accountRepository.findAccountByEmail(signUp.getUserEmail());
+        System.out.println(accountRepository);
         if (account != null) {
             apiMessageDto.setResult(false);
             apiMessageDto.setCode(ErrorCode.USER_ERROR_EXIST);
             return apiMessageDto;
         }
+
+        // Tạo account for USER
+        // Applying Factory Method Pattern
+        iAccount = AccountFactory.newAccount(AccountType.USER);
+        account = iAccount.create();
         Role role = roleRepository.findFirstByName(APConstant.ROLE_END_USER.trim());
-        if (role == null) {
+        if (!account.getRole().getId().equals(role.getId())) {
             apiMessageDto.setResult(false);
             apiMessageDto.setCode(ErrorCode.USER_ERROR_UNKNOWN);
             return apiMessageDto;
         }
-        UserProfile user = userProfileMapper.formCreateUserProfile(signUp);
-        user.setStatus(APConstant.STATUS_ACTIVE);
 
-        // Tạo account for USER
-        account = user.getAccount();
-        account.setRole(role);
+        account.setEmail(signUp.getUserEmail());
+        account.setFullName(signUp.getUserFullName());
+        account.setAvatarPath(signUp.getUserAvatar());
         account.setStatus(APConstant.STATUS_ACTIVE);
-        account.setPassword(passwordEncoder.encode(account.getPassword()));
+        account.setPassword(passwordEncoder.encode(signUp.getUserPassword()));
         account.setCreatedBy(account.getEmail());
         account.setModifiedBy(account.getEmail());
-        user.setCreatedBy(account.getEmail());
-        user.setModifiedBy(account.getEmail());
-
-        accountRepository.save(user.getAccount());
+        accountRepository.save(account);
 
         // Tạo user profile
+        UserProfile user = userProfileMapper.formCreateUserProfile(signUp);
+        user.setStatus(APConstant.STATUS_ACTIVE);
+        user.setAccount(account);
+        user.setCreatedBy(account.getEmail());
+        user.setModifiedBy(account.getEmail());
         userProfileRepository.save(user);
 
         apiMessageDto.setResult(true);
@@ -122,6 +132,7 @@ public class UserController extends ABasicController {
 
     @PreAuthorize("hasPermission('EXPERT','C')")
     @PostMapping(value = "/create-expert", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     public ApiMessageDto<Long> createExpert(@RequestBody @Valid CreateUserForm signUp, BindingResult bindingResult) {
         ApiMessageDto<Long> apiMessageDto = new ApiMessageDto<>();
         Account account = accountRepository.findAccountByEmail(signUp.getUserEmail());
@@ -130,29 +141,34 @@ public class UserController extends ABasicController {
             apiMessageDto.setCode(ErrorCode.USER_ERROR_EXIST);
             return apiMessageDto;
         }
+
+        // Tạo account for USER
+        // Applying Factory Method Pattern
+        iAccount = AccountFactory.newAccount(AccountType.EXPERT);
+        account = iAccount.create();
         Role role = roleRepository.findFirstByName(APConstant.ROLE_EXPERT.trim());
-        if (role == null) {
+        if (!account.getRole().getId().equals(role.getId())) {
             apiMessageDto.setResult(false);
             apiMessageDto.setCode(ErrorCode.USER_ERROR_UNKNOWN);
             return apiMessageDto;
         }
-        UserProfile user = userProfileMapper.formCreateUserProfile(signUp);
-        user.setStatus(APConstant.STATUS_ACTIVE);
 
-        // Tạo account for USER
-        account = user.getAccount();
-        account.setRole(role);
+        account.setEmail(signUp.getUserEmail());
+        account.setFullName(signUp.getUserFullName());
+        account.setAvatarPath(signUp.getUserAvatar());
         account.setStatus(APConstant.STATUS_ACTIVE);
-        account.setPassword(passwordEncoder.encode(account.getPassword()));
+        account.setPassword(passwordEncoder.encode(signUp.getUserPassword()));
         String email = getCurrentUser();
         account.setCreatedBy(email);
         account.setModifiedBy(email);
-        user.setCreatedBy(email);
-        user.setModifiedBy(email);
-
-        accountRepository.save(user.getAccount());
+        accountRepository.save(account);
 
         // Tạo expert profile
+        UserProfile user = userProfileMapper.formCreateUserProfile(signUp);
+        user.setStatus(APConstant.STATUS_ACTIVE);
+        user.setAccount(account);
+        user.setCreatedBy(email);
+        user.setModifiedBy(email);
         userProfileRepository.save(user);
 
         apiMessageDto.setResult(true);
@@ -229,6 +245,7 @@ public class UserController extends ABasicController {
     }
 
     @PutMapping(value = "/change-password", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     public ApiMessageDto<Long> changePassword(@Valid @RequestBody ChangePasswordForgotForm changePasswordForgotForm, BindingResult bindingResult) {
         ApiMessageDto<Long> apiMessageDto = new ApiMessageDto<>();
         Account account = accountRepository.findAccountByEmail(changePasswordForgotForm.getEmail());
@@ -245,6 +262,7 @@ public class UserController extends ABasicController {
     }
 
     @PostMapping(value = "/uploadFile", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     public ApiMessageDto<FileData> uploadFile(@RequestParam("file") MultipartFile file) {
         ApiMessageDto<FileData> apiMessageDto = new ApiMessageDto<>();
         String fileName = fileStorageService.storeFile(file);
